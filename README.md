@@ -10,7 +10,7 @@
 (3) 根据api文件生成MD接口文档
     $ goctl api go doc --o=./doc --dir=../
 (4) 根据api文件生成代码
-    $ goctl api go -api ./apis/systemmanage.api -dir . -style gozero --home ../../../template
+    $ goctl api go -api .\apis\sysmanagement.api -dir . -style gozero --home ..\..\..\..\template
 ```
 
 ### 2. 项目中关于go-zero的其他配置

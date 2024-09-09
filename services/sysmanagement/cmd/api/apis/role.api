@@ -59,7 +59,7 @@ type (
     jwt: JetAuth
     prefix: sm/admin/api/v1
 )
-service asense-api{
+service asense-api {
     @doc "新增角色"
     @handler roleAdd
     post /role/add (RoleReq)

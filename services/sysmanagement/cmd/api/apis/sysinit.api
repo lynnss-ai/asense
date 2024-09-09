@@ -1,0 +1,19 @@
+syntax = "v1"
+
+info(
+    title: "type title here"
+    desc: "type desc here"
+    author: "Wang Xuebing"
+    email: "lynnss.ai@hotmail.com"
+    version: "type version here"
+)
+
+@server(
+    group: sysinit
+    prefix: sm/admin/api/v1
+)
+service asense-api {
+    @doc "系统初始化"
+    @handler sysinit
+    post /sysinit/init
+}
