@@ -1,0 +1,66 @@
+syntax = "v1"
+
+info(
+    title: "type title here"
+    desc: "type desc here"
+    author: "Wang Xuebing"
+    email: "lynnss.ai@hotmail.com"
+    version: "type version here"
+)
+
+type (
+    ComIDPathReq {
+        ID string `path:"id"` // id
+    }
+    ComIDFormReq {
+        ID *string `form:"id,optional"` // id
+    }
+    ComCodeFormReq {
+        Code *string `form:"code,optional"` // code
+    }
+    ComFilterFormReq {
+        Filter *string `form:"filter,optional"` // filter
+    }
+    ComPageFormReq {
+        Page int `form:"page"`                  // page
+        PageSize int `form:"pageSize"`          // pageSize
+        Filter *string `form:"filter,optional"` // filter
+    }
+    ComKvResp {
+        Key string `json:"key"`     // key
+        Value string `json:"value"` // value
+    }
+    ComKvListResp {
+        Items []*ComKvResp `json:"items"` // list
+    }
+)
+
+
+type (
+    //用户名密码登录
+    ComLoginReq {
+        UserName string `json:"userName"` // username
+        Password string `json:"password"` // password
+    }
+        //手机验证码登录
+    ComSmsLoginReq {
+        Phone string `json:"phone"`
+        SmsCode string `json:"smsCode"`
+    }
+        //登录响应参数
+    ComLoginResp {
+        AccessToken string `json:"accessToken"`  // accessToken
+        AccessExpire int64 `json:"accessExpire"` // accessExpire
+        RefreshAfter int64 `json:"refreshAfter"` // refreshAfter
+    }
+        //重置密码
+    ComUserResetPwdReq {
+        UserID string `json:"userId"`     // userId
+        Password string `json:"password"` // password
+    }
+        //修改密码
+    ComUserChangePwdReq {
+        OldPassword string `json:"oldPassword"` // oldPassword
+        NewPassword string `json:"newPassword"` // newPassword
+    }
+)

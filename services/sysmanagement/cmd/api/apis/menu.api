@@ -1,0 +1,110 @@
+syntax = "v1"
+
+info(
+    title: "type title here"
+    desc: "type desc here"
+    author: "Wang Xuebing"
+    email: "lynnss.ai@hotmail.com"
+    version: "type version here"
+)
+
+import "common.api"
+
+type (
+    MenuReq {
+        PID string `json:"pid"`                                 //父级ID
+        MenuName string `json:"menuName"`                       //菜单名称
+        MenuCode string `json:"menuCode"`                       //菜单编码
+        MenuDesc string `json:"menuDesc"`                       //菜单描述
+        MenuIcon string `json:"menuIcon"`                       //菜单图标
+        MenuPath string `json:"menuPath"`                       //菜单路径
+        MenuType int `json:"menuType"`                          //菜单类型[1:菜单;2:按钮]
+        MenuComponent string `json:"menuComponent"`             //菜单组件
+        IsHideInMenu bool `json:"isHideInMenu"`                 //是否隐藏菜单[true:隐藏;false:显示]
+        IsHideChildrenInMenu bool `json:"isHideChildrenInMenu"` //是否隐藏子菜单[true:隐藏;false:显示]
+        IsHideInBreadcrumb bool `json:"isHideInBreadcrumb"`     //是否隐藏面包屑[true:隐藏;false:显示]
+        Sort int `json:"sort"`                                  //排序
+        IsJoinAdminist bool `json:"isJoinAdminist"`             //是否加入管理员菜单[true:是;false:否]
+    }
+
+    MenuEditReq {
+        ID string `path:"id"`                                   //ID
+        PID string `json:"pid"`                                 //父级ID
+        MenuName string `json:"menuName"`                       //菜单名称
+        MenuCode string `json:"menuCode"`                       //菜单编码
+        MenuDesc string `json:"menuDesc"`                       //菜单描述
+        MenuIcon string `json:"menuIcon"`                       //菜单图标
+        MenuPath string `json:"menuPath"`                       //菜单路径
+        MenuType int `json:"menuType"`                          //菜单类型[1:菜单;2:按钮]
+        MenuComponent string `json:"menuComponent"`             //菜单组件
+        IsHideInMenu bool `json:"isHideInMenu"`                 //是否隐藏菜单[true:隐藏;false:显示]
+        IsHideChildrenInMenu bool `json:"isHideChildrenInMenu"` //是否隐藏子菜单[true:隐藏;false:显示]
+        IsHideInBreadcrumb bool `json:"isHideInBreadcrumb"`     //是否隐藏面包屑[true:隐藏;false:显示]
+        Sort int `json:"sort"`                                  //排序
+    }
+
+    MenuResp {
+        ID string `json:"id"`                                   //ID
+        PID string `json:"pid"`                                 //父级ID
+        MenuName string `json:"menuName"`                       //菜单名称
+        MenuCode string `json:"menuCode"`                       //菜单编码
+        MenuDesc string `json:"menuDesc"`                       //菜单描述
+        MenuIcon string `json:"menuIcon"`                       //菜单图标
+        MenuPath string `json:"menuPath"`                       //菜单路径
+        MenuType int `json:"menuType"`                          //菜单类型[1:菜单;2:按钮]
+        MenuComponent string `json:"menuComponent"`             //菜单组件
+        IsHideInMenu bool `json:"isHideInMenu"`                 //是否隐藏菜单[true:隐藏;false:显示]
+        IsHideChildrenInMenu bool `json:"isHideChildrenInMenu"` //是否隐藏子菜单[true:隐藏;false:显示]
+        IsHideInBreadcrumb bool `json:"isHideInBreadcrumb"`     //是否隐藏面包屑[true:隐藏;false:显示]
+        IsEnable bool `json:"isEnable"`                         //是否启用[true:启用;false:禁用]
+        Sort int `json:"sort"`                                  //排序
+    }
+
+    MenuTreeResp {
+        MenuResp
+        Children []*MenuTreeResp `json:"children"` //子菜单
+    }
+    MenuListResp {
+        Items []*MenuTreeResp `json:"items"` //列表
+    }
+)
+
+@server(
+    group: menu
+    jwt: JetAuth
+    prefix: sm/admin/api/v1
+)
+
+service asense-api {
+    @doc "新增菜单"
+    @handler menuAdd
+    post /menu/add (MenuReq)
+
+    @doc "编辑菜单"
+    @handler menuEdit
+    put /menu/edit (MenuEditReq)
+
+    @doc "删除菜单"
+    @handler menuDel
+    delete /menu/del/:id (ComIDPathReq)
+
+    @doc "菜单详情"
+    @handler menuDetail
+    get /menu/detail/:id (ComIDPathReq) returns(MenuResp)
+
+    @doc "获取所有菜单"
+    @handler menuAllList
+    get /menu/all-list returns(MenuListResp)
+
+    @doc "根据当前用户获取菜单列表"
+    @handler menuListByUser
+    get /menu/list-by-user returns(MenuListResp)
+
+    @doc "根据角色获取菜单列表"
+    @handler menuListByRole
+    get /menu/list-by-role/:id (ComIDPathReq) returns(MenuListResp)
+
+    @doc "启用|禁用菜单"
+    @handler menuEnable
+    put /menu/enable/:id (ComIDPathReq)
+}

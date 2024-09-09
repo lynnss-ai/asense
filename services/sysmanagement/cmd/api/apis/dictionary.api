@@ -1,0 +1,94 @@
+syntax = "v1"
+
+info(
+    title: "type title here"
+    desc: "type desc here"
+    author: "Wang Xuebing"
+    email: "lynnss.ai@hotmail.com"
+    version: "type version here"
+)
+
+import "common.api"
+
+type (
+    DictionaryReq {
+        PID string `json:"pid"`             //父级ID
+        DicName string `json:"dicName"`     //字典名称
+        DicCode string `json:"dicCode"`     //字典编码
+        DicDesc string `json:"dicDesc"`     //字典描述
+        DicValue string `json:"dicValue"`   //字典值
+        DicValue2 string `json:"dicValue2"` //字典值2
+        DicValue3 string `json:"dicValue3"` //字典值3
+        Sort int `json:"sort"`              //排序
+    }
+
+    DictionaryEditReq {
+        ID string `path:"id"`               //ID
+        PID string `json:"pid"`             //父级ID
+        DicName string `json:"dicName"`     //字典名称
+        DicCode string `json:"dicCode"`     //字典编码
+        DicDesc string `json:"dicDesc"`     //字典描述
+        DicValue string `json:"dicValue"`   //字典值
+        DicValue2 string `json:"dicValue2"` //字典值2
+        DicValue3 string `json:"dicValue3"` //字典值3
+        Sort int `json:"sort"`              //排序
+    }
+
+    DictionaryResp {
+        ID string `json:"id"`               //ID
+        PID string `json:"pid"`             //父级ID
+        DicName string `json:"dicName"`     //字典名称
+        DicCode string `json:"dicCode"`     //字典编码
+        DicDesc string `json:"dicDesc"`     //字典描述
+        DicValue string `json:"dicValue"`   //字典值
+        DicValue2 string `json:"dicValue2"` //字典值2
+        DicValue3 string `json:"dicValue3"` //字典值3
+        Sort int `json:"sort"`              //排序
+        IsEdit bool `json:"isEdit"`         //是否可编辑
+        IsEnable bool `json:"isEnable"`     //是否启用
+        CreatedAt int64 `json:"createdAt"`  //创建时间
+        UpdatedAt int64 `json:"updatedAt"`  //更新时间
+    }
+
+    DictionaryListReq {
+        Pid *string `form:"pid,optional"`         //父级ID
+        IsEnable *bool `form:"isEnable,optional"` //是否启用[true:启用;false:禁用]
+        Filter *string `form:"filter,optional"`   //过滤条件
+    }
+
+    DictionaryListResp {
+        Items []*DictionaryResp `json:"items"` //列表
+    }
+)
+
+@server(
+    group: dictionary
+    jwt: JetAuth
+    prefix: sm/admin/api/v1
+)
+
+service asense-api {
+    @doc "新增字典"
+    @handler dictionaryAdd
+    post /dictionary/add (DictionaryReq)
+
+    @doc "编辑字典"
+    @handler dictionaryEdit
+    put /dictionary/edit/:id (DictionaryEditReq)
+
+    @doc "删除字典"
+    @handler dictionaryDel
+    delete /dictionary/del/:id (ComIDPathReq)
+
+    @doc "字典详情"
+    @handler dictionaryDetail
+    get /dictionary/detail/:id (ComIDPathReq) returns(DictionaryResp)
+
+    @doc "字典列表"
+    @handler dictionaryList
+    get /dictionary/list (DictionaryListReq) returns(DictionaryListResp)
+
+    @doc "启用|禁用字典"
+    @handler dictionaryEnable
+    put /dictionary/enable/:id (ComIDPathReq)
+}

@@ -1,0 +1,94 @@
+syntax = "v1"
+
+info(
+    title: "type title here"
+    desc: "type desc here"
+    author: "Wang Xuebing"
+    email: "lynnss.ai@hotmail.com"
+    version: "type version here"
+)
+
+import "common.api"
+
+type (
+    RoleReq {
+        RoleName string `json:"roleName"` //角色名称
+        RoleCode string `json:"roleCode"` //角色编码
+        RoleDesc string `json:"roleDesc"` //角色描述
+    }
+
+    RoleEditReq {
+        ID string `path:"id"`             //ID
+        RoleName string `json:"roleName"` //角色名称
+        RoleDesc string `json:"roleDesc"` //角色描述
+    }
+
+    RoleResp {
+        ID string `json:"id"`                              //ID
+        RoleName string `json:"roleName"`                  //角色名称
+        RoleCode string `json:"roleCode"`                  //角色编码
+        RoleDesc string `json:"roleDesc"`                  //角色描述
+        IsSetPermission bool `json:"isSetPermission"`      //是否设置权限
+        IsEnable bool `json:"isEnable"`                    //是否启用[true:启用;false:禁用]
+        SelectedMenuIds []string `json:"selectedMenuIds"`  //已选菜单ID
+        MenuIds []*string `json:"menuIds"`                 //菜单集合ID
+        CreatedAt int64 `json:"createdAt"`                 //创建时间
+        UpdatedAt int64 `json:"updatedAt"`                 //更新时间
+    }
+
+    RolePageReq {
+        ComPageFormReq
+        IsEnable *bool `form:"isEnable,optional"`               //是否启用[true:启用,false:禁用]
+        IsSetPermission *bool `form:"isSetPermission,optional"` //是否设置权限[true:已设置,false:未设置]
+    }
+
+    RolePageResp {
+        Total int64 `json:"total"`          //总数
+        Items []*RoleResp `json:"items"`    //列表
+    }
+
+    RoleSetPermissionReq {
+        RoleID string `json:"roleId"`
+        SelectedMenuIds []string `json:"selectedMenuIds"`
+        MenuIds []*string `json:"menuIds"`
+    }
+)
+
+@server(
+    group: role
+    jwt: JetAuth
+    prefix: sm/admin/api/v1
+)
+service asense-api{
+    @doc "新增角色"
+    @handler roleAdd
+    post /role/add (RoleReq)
+
+    @doc "编辑角色"
+    @handler roleEdit
+    put /role/edit/:id (RoleEditReq)
+
+    @doc "删除角色"
+    @handler roleDel
+    delete /role/del/:id (ComIDPathReq)
+
+    @doc "角色详情"
+    @handler roleDetail
+    get /role/detail/:id (ComIDPathReq) returns(RoleResp)
+
+    @doc "角色列表"
+    @handler roleList
+    get /role/list (ComFilterFormReq) returns(ComKvListResp)
+
+    @doc "角色分页列表"
+    @handler rolePage
+    get /role/page (RolePageReq) returns(RolePageResp)
+
+    @doc "启用|禁用角色"
+    @handler roleEnable
+    put /role/enable/:id (ComIDPathReq)
+
+    @doc "设置角色权限"
+    @handler roleSetPermission
+    put /role/set-permission (RoleSetPermissionReq)
+}
