@@ -1,7 +1,10 @@
 package role
 
 import (
+	"asense/common/errorx"
+	"asense/services/sysmanagement/model"
 	"context"
+	"strings"
 
 	"asense/services/sysmanagement/cmd/api/internal/svc"
 	"asense/services/sysmanagement/cmd/api/internal/types"
@@ -25,7 +28,38 @@ func NewRoleDetailLogic(ctx context.Context, svcCtx *svc.ServiceContext) *RoleDe
 }
 
 func (l *RoleDetailLogic) RoleDetail(req *types.ComIDPathReq) (resp *types.RoleResp, err error) {
-	// todo: add your logic here and delete this line
+	var (
+		role            *model.Role
+		menuIds         []*string
+		selectedMenuIds []string
+	)
+	role, err = l.svcCtx.RoleModel.FindOne(l.ctx, req.ID)
+	if err != nil {
+		return nil, errorx.NewDataBaseError(err)
+	}
+	menuIds, err = l.svcCtx.RolePermissionModel.ListByRoleID(l.ctx, req.ID)
+	if err != nil {
+		return nil, errorx.NewDataBaseError(err)
+	}
 
-	return
+	if role.SelectedMenuIds != "" {
+		selectedMenuIds = strings.Split(role.SelectedMenuIds, ",")
+	} else {
+		selectedMenuIds = []string{}
+	}
+
+	resp = &types.RoleResp{
+		ID:              role.ID,
+		RoleName:        role.RoleName,
+		RoleCode:        role.RoleCode,
+		RoleDesc:        role.RoleDesc,
+		IsSetPermission: role.IsSetPermission,
+		IsEnable:        role.IsEnable,
+		IsAdmin:         role.IsAdmin,
+		MenuIds:         menuIds,
+		SelectedMenuIds: selectedMenuIds,
+		CreatedAt:       role.CreatedAt,
+		UpdatedAt:       role.UpdatedAt,
+	}
+	return resp, nil
 }

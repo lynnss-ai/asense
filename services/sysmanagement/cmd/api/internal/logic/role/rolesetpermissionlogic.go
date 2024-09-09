@@ -1,7 +1,11 @@
 package role
 
 import (
+	"asense/common/dbcore"
+	"asense/common/errorx"
+	"asense/services/sysmanagement/model"
 	"context"
+	"strings"
 
 	"asense/services/sysmanagement/cmd/api/internal/svc"
 	"asense/services/sysmanagement/cmd/api/internal/types"
@@ -25,7 +29,29 @@ func NewRoleSetPermissionLogic(ctx context.Context, svcCtx *svc.ServiceContext) 
 }
 
 func (l *RoleSetPermissionLogic) RoleSetPermission(req *types.RoleSetPermissionReq) error {
-	// todo: add your logic here and delete this line
+	var rolePermissions []*model.RolePermission
 
-	return nil
+	for _, menuId := range req.MenuIds {
+		rolePermissions = append(rolePermissions, &model.RolePermission{
+			ID:     dbcore.NewId(),
+			RoleID: req.RoleID,
+			MenuID: menuId,
+		})
+	}
+	err := l.svcCtx.Tx.ExecTx(l.ctx, func(ctx context.Context) error {
+		if err := l.svcCtx.RolePermissionModel.WithTrans(ctx).DeleteByRoleID(l.ctx, req.RoleID); err != nil {
+			return errorx.NewDataBaseError(err)
+		}
+		if err := l.svcCtx.RoleModel.WithTrans(ctx).Update(l.ctx, req.RoleID, map[string]interface{}{
+			"is_set_permission": true,
+			"selected_menu_ids": strings.Join(req.SelectedMenuIds, ","),
+		}); err != nil {
+			return errorx.NewDataBaseError(err)
+		}
+		if err := l.svcCtx.RolePermissionModel.WithTrans(ctx).BatchInsert(l.ctx, rolePermissions); err != nil {
+			return errorx.NewDataBaseError(err)
+		}
+		return nil
+	})
+	return err
 }

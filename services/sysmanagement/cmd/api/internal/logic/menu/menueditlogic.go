@@ -1,6 +1,7 @@
 package menu
 
 import (
+	"asense/common/errorx"
 	"context"
 
 	"asense/services/sysmanagement/cmd/api/internal/svc"
@@ -25,7 +26,22 @@ func NewMenuEditLogic(ctx context.Context, svcCtx *svc.ServiceContext) *MenuEdit
 }
 
 func (l *MenuEditLogic) MenuEdit(req *types.MenuEditReq) error {
-	// todo: add your logic here and delete this line
-
+	v := map[string]interface{}{
+		"pid":                      req.PID,
+		"menu_name":                req.MenuName,
+		"menu_desc":                req.MenuDesc,
+		"menu_icon":                req.MenuIcon,
+		"menu_path":                req.MenuPath,
+		"menu_type":                req.MenuType,
+		"menu_component":           req.MenuComponent,
+		"is_hide_in_menu":          req.IsHideInMenu,
+		"is_hide_children_in_menu": req.IsHideChildrenInMenu,
+		"is_hide_in_breadcrumb":    req.IsHideInBreadcrumb,
+		"sort":                     req.Sort,
+	}
+	err := l.svcCtx.MenuModel.Update(l.ctx, req.ID, v)
+	if err != nil {
+		return errorx.NewDataBaseError(err)
+	}
 	return nil
 }

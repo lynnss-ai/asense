@@ -1,7 +1,12 @@
 package user
 
 import (
+	"asense/common/components"
+	"asense/common/errorx"
+	"asense/services/sysmanagement/model"
 	"context"
+	"errors"
+	"gorm.io/gorm"
 
 	"asense/services/sysmanagement/cmd/api/internal/svc"
 	"asense/services/sysmanagement/cmd/api/internal/types"
@@ -25,7 +30,24 @@ func NewUserAvatarEditLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Us
 }
 
 func (l *UserAvatarEditLogic) UserAvatarEdit(req *types.UserAvatarEditReq) error {
-	// todo: add your logic here and delete this line
+	var (
+		user *model.User
+		err  error
+	)
+	userID := components.GetAuthKeyJwtUserID(l.ctx)
+	user, err = l.svcCtx.UserModel.FindOne(l.ctx, userID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errorx.NewDefaultError("用户不存在")
+		}
+		return errorx.NewDataBaseError(err)
+	}
+
+	if err = l.svcCtx.UserModel.Update(l.ctx, user.ID, map[string]interface{}{
+		"avatar": req.Avatar,
+	}); err != nil {
+		return errorx.NewDataBaseError(err)
+	}
 
 	return nil
 }

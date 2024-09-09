@@ -1,6 +1,7 @@
 package role
 
 import (
+	"asense/common/errorx"
 	"context"
 
 	"asense/services/sysmanagement/cmd/api/internal/svc"
@@ -25,7 +26,9 @@ func NewRoleEnableLogic(ctx context.Context, svcCtx *svc.ServiceContext) *RoleEn
 }
 
 func (l *RoleEnableLogic) RoleEnable(req *types.ComIDPathReq) error {
-	// todo: add your logic here and delete this line
-
+	err := l.svcCtx.RoleModel.Enable(l.ctx, req.ID)
+	if err != nil {
+		return errorx.NewDataBaseError(err)
+	}
 	return nil
 }

@@ -1,7 +1,14 @@
 package user
 
 import (
+	"asense/common/components"
+	"asense/common/errorx"
+	"asense/common/utils/encryptutil"
+	"asense/common/utils/randomutil"
+	"asense/services/sysmanagement/model"
 	"context"
+	"errors"
+	"gorm.io/gorm"
 
 	"asense/services/sysmanagement/cmd/api/internal/svc"
 	"asense/services/sysmanagement/cmd/api/internal/types"
@@ -25,7 +32,31 @@ func NewUserChangePwdLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Use
 }
 
 func (l *UserChangePwdLogic) UserChangePwd(req *types.ComUserChangePwdReq) error {
-	// todo: add your logic here and delete this line
-
+	var (
+		user *model.User
+		err  error
+	)
+	userId := components.GetAuthKeyJwtUserID(l.ctx)
+	user, err = l.svcCtx.UserModel.FindOne(l.ctx, userId)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errorx.NewDefaultError("该用户不存在")
+		}
+		return errorx.NewDataBaseError(err)
+	}
+	isSuccessPwd := encryptutil.ComparePassword(req.NewPassword, req.OldPassword, user.Salt)
+	if !isSuccessPwd {
+		return errorx.NewDefaultError("您输入的旧密码错误")
+	}
+	salt := randomutil.GetRandomNumStr(32)
+	password, _ := encryptutil.GeneratePassword(req.NewPassword, salt)
+	userMap := map[string]interface{}{
+		"password": password,
+		"salt":     salt,
+	}
+	err = l.svcCtx.UserModel.Update(l.ctx, userId, userMap)
+	if err != nil {
+		return errorx.NewDataBaseError(err)
+	}
 	return nil
 }

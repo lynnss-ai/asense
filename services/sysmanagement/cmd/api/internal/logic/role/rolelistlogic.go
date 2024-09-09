@@ -1,6 +1,8 @@
 package role
 
 import (
+	"asense/common/errorx"
+	"asense/services/sysmanagement/model"
 	"context"
 
 	"asense/services/sysmanagement/cmd/api/internal/svc"
@@ -25,7 +27,20 @@ func NewRoleListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *RoleList
 }
 
 func (l *RoleListLogic) RoleList(req *types.ComFilterFormReq) (resp *types.ComKvListResp, err error) {
-	// todo: add your logic here and delete this line
-
-	return
+	var (
+		list     []*model.Role
+		roleList []*types.ComKvResp
+	)
+	isEnable := true
+	list, err = l.svcCtx.RoleModel.ListBySetPermission(l.ctx, req.Filter, &isEnable)
+	if err != nil {
+		return nil, errorx.NewDataBaseError(err)
+	}
+	for _, item := range list {
+		roleList = append(roleList, &types.ComKvResp{
+			Key:   item.ID,
+			Value: item.RoleName,
+		})
+	}
+	return &types.ComKvListResp{Items: roleList}, nil
 }

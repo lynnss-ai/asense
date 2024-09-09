@@ -113,7 +113,6 @@ type MenuEditReq struct {
 	ID                   string `path:"id"`                   //ID
 	PID                  string `json:"pid"`                  //父级ID
 	MenuName             string `json:"menuName"`             //菜单名称
-	MenuCode             string `json:"menuCode"`             //菜单编码
 	MenuDesc             string `json:"menuDesc"`             //菜单描述
 	MenuIcon             string `json:"menuIcon"`             //菜单图标
 	MenuPath             string `json:"menuPath"`             //菜单路径
@@ -196,6 +195,7 @@ type RoleResp struct {
 	RoleCode        string    `json:"roleCode"`        //角色编码
 	RoleDesc        string    `json:"roleDesc"`        //角色描述
 	IsSetPermission bool      `json:"isSetPermission"` //是否设置权限
+	IsAdmin         bool      `json:"isAdmin"`         //是否管理员
 	IsEnable        bool      `json:"isEnable"`        //是否启用[true:启用;false:禁用]
 	SelectedMenuIds []string  `json:"selectedMenuIds"` //已选菜单ID
 	MenuIds         []*string `json:"menuIds"`         //菜单集合ID
@@ -204,9 +204,9 @@ type RoleResp struct {
 }
 
 type RoleSetPermissionReq struct {
-	RoleID          string    `json:"roleId"`
-	SelectedMenuIds []string  `json:"selectedMenuIds"`
-	MenuIds         []*string `json:"menuIds"`
+	RoleID          string   `json:"roleId"`
+	SelectedMenuIds []string `json:"selectedMenuIds"`
+	MenuIds         []string `json:"menuIds"`
 }
 
 type UserAvatarEditReq struct {

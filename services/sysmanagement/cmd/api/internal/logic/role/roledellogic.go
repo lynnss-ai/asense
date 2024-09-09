@@ -1,6 +1,7 @@
 package role
 
 import (
+	"asense/common/errorx"
 	"context"
 
 	"asense/services/sysmanagement/cmd/api/internal/svc"
@@ -25,7 +26,25 @@ func NewRoleDelLogic(ctx context.Context, svcCtx *svc.ServiceContext) *RoleDelLo
 }
 
 func (l *RoleDelLogic) RoleDel(req *types.ComIDPathReq) error {
-	// todo: add your logic here and delete this line
-
-	return nil
+	var (
+		count int64
+		err   error
+	)
+	count, err = l.svcCtx.UserRoleModel.CountByRoleID(l.ctx, req.ID)
+	if err != nil {
+		return errorx.NewDataBaseError(err)
+	}
+	if count > 0 {
+		return errorx.NewDefaultError("该角色下存在用户，不能删除")
+	}
+	err = l.svcCtx.Tx.ExecTx(l.ctx, func(ctx context.Context) error {
+		if err := l.svcCtx.RoleModel.WithTrans(ctx).Delete(l.ctx, req.ID); err != nil {
+			return errorx.NewDataBaseError(err)
+		}
+		if err := l.svcCtx.RolePermissionModel.WithTrans(ctx).DeleteByRoleID(l.ctx, req.ID); err != nil {
+			return errorx.NewDataBaseError(err)
+		}
+		return nil
+	})
+	return err
 }

@@ -1,6 +1,7 @@
 package user
 
 import (
+	"asense/common/errorx"
 	"context"
 
 	"asense/services/sysmanagement/cmd/api/internal/svc"
@@ -25,7 +26,16 @@ func NewUserDelLogic(ctx context.Context, svcCtx *svc.ServiceContext) *UserDelLo
 }
 
 func (l *UserDelLogic) UserDel(req *types.ComIDPathReq) error {
-	// todo: add your logic here and delete this line
+	err := l.svcCtx.Tx.ExecTx(l.ctx, func(ctx context.Context) error {
+		if err := l.svcCtx.UserRoleModel.WithTrans(ctx).DeleteByUserID(l.ctx, req.ID); err != nil {
+			return errorx.NewDataBaseError(err)
+		}
+		if err := l.svcCtx.UserModel.WithTrans(ctx).Delete(l.ctx, req.ID); err != nil {
+			return errorx.NewDataBaseError(err)
+		}
 
-	return nil
+		return nil
+	})
+
+	return err
 }

@@ -1,6 +1,8 @@
 package dictionary
 
 import (
+	"asense/common/errorx"
+	"asense/services/sysmanagement/model"
 	"context"
 
 	"asense/services/sysmanagement/cmd/api/internal/svc"
@@ -25,7 +27,25 @@ func NewDictionaryDetailLogic(ctx context.Context, svcCtx *svc.ServiceContext) *
 }
 
 func (l *DictionaryDetailLogic) DictionaryDetail(req *types.ComIDPathReq) (resp *types.DictionaryResp, err error) {
-	// todo: add your logic here and delete this line
-
-	return
+	var dic *model.Dictionary
+	dic, err = l.svcCtx.DictionaryModel.FindOne(l.ctx, req.ID)
+	if err != nil {
+		return nil, errorx.NewDataBaseError(err)
+	}
+	resp = &types.DictionaryResp{
+		ID:        dic.ID,
+		PID:       dic.PID,
+		DicName:   dic.DicName,
+		DicCode:   dic.DicCode,
+		DicDesc:   dic.DicDesc,
+		DicValue:  dic.DicValue,
+		DicValue2: dic.DicValue2,
+		DicValue3: dic.DicValue3,
+		Sort:      dic.Sort,
+		IsEdit:    dic.IsEdit,
+		IsEnable:  dic.IsEnable,
+		CreatedAt: dic.CreatedAt,
+		UpdatedAt: dic.UpdatedAt,
+	}
+	return resp, nil
 }

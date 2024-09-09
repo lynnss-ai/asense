@@ -32,9 +32,9 @@ type (
 		ID            string          `json:"id" gorm:"column:id;primaryKey;type:varchar(32)"`             // 用户ID
 		Name          string          `json:"name" gorm:"column:name;type:varchar(32);not null"`           // 姓名
 		UserName      string          `json:"user_name" gorm:"column:user_name;type:varchar(32);not null"` // 用户名
-		Phone         string          `json:"phone" gorm:"column:phone;type:varchar(20);not null"`         // 手机号
+		Phone         *string         `json:"phone" gorm:"column:phone;type:varchar(20)"`                  // 手机号
 		Password      string          `json:"password" gorm:"column:password;type:varchar(64);not null"`   // 密码
-		Email         string          `json:"email" gorm:"column:email;type:varchar(255)"`                 // 邮箱
+		Email         *string         `json:"email" gorm:"column:email;type:varchar(255)"`                 // 邮箱
 		Salt          string          `json:"salt" gorm:"column:salt;type:varchar(256);not null"`          // 盐值
 		Avatar        string          `json:"avatar" gorm:"column:avatar;type:varchar(255)"`               // 头像
 		IsEnable      bool            `json:"is_enable" gorm:"column:is_enable;type:bool;not null"`        // 是否启用[true:启用,false:禁用]

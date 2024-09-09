@@ -29,6 +29,7 @@ type (
         RoleCode string `json:"roleCode"`                  //角色编码
         RoleDesc string `json:"roleDesc"`                  //角色描述
         IsSetPermission bool `json:"isSetPermission"`      //是否设置权限
+        IsAdmin bool `json:"isAdmin"`                      //是否管理员
         IsEnable bool `json:"isEnable"`                    //是否启用[true:启用;false:禁用]
         SelectedMenuIds []string `json:"selectedMenuIds"`  //已选菜单ID
         MenuIds []*string `json:"menuIds"`                 //菜单集合ID
@@ -50,7 +51,7 @@ type (
     RoleSetPermissionReq {
         RoleID string `json:"roleId"`
         SelectedMenuIds []string `json:"selectedMenuIds"`
-        MenuIds []*string `json:"menuIds"`
+        MenuIds []string `json:"menuIds"`
     }
 )
 
@@ -74,15 +75,15 @@ service asense-api {
 
     @doc "角色详情"
     @handler roleDetail
-    get /role/detail/:id (ComIDPathReq) returns(RoleResp)
+    get /role/detail/:id (ComIDPathReq) returns (RoleResp)
 
     @doc "角色列表"
     @handler roleList
-    get /role/list (ComFilterFormReq) returns(ComKvListResp)
+    get /role/list (ComFilterFormReq) returns (ComKvListResp)
 
     @doc "角色分页列表"
     @handler rolePage
-    get /role/page (RolePageReq) returns(RolePageResp)
+    get /role/page (RolePageReq) returns (RolePageResp)
 
     @doc "启用|禁用角色"
     @handler roleEnable

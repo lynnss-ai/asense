@@ -1,6 +1,7 @@
 package user
 
 import (
+	"asense/common/errorx"
 	"context"
 
 	"asense/services/sysmanagement/cmd/api/internal/svc"
@@ -25,7 +26,9 @@ func NewUserEnableLogic(ctx context.Context, svcCtx *svc.ServiceContext) *UserEn
 }
 
 func (l *UserEnableLogic) UserEnable(req *types.ComIDPathReq) error {
-	// todo: add your logic here and delete this line
-
+	err := l.svcCtx.UserModel.Enable(l.ctx, req.ID)
+	if err != nil {
+		return errorx.NewDataBaseError(err)
+	}
 	return nil
 }

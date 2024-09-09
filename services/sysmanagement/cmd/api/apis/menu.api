@@ -31,7 +31,6 @@ type (
         ID string `path:"id"`                                   //ID
         PID string `json:"pid"`                                 //父级ID
         MenuName string `json:"menuName"`                       //菜单名称
-        MenuCode string `json:"menuCode"`                       //菜单编码
         MenuDesc string `json:"menuDesc"`                       //菜单描述
         MenuIcon string `json:"menuIcon"`                       //菜单图标
         MenuPath string `json:"menuPath"`                       //菜单路径

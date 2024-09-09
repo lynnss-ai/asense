@@ -1,3 +1,12 @@
 Name: asense-api
 Host: 0.0.0.0
-Port: 8888
+Port: 8001
+
+JetAuth:
+  AccessSecret: 45B621CAE69CF750AF896B753EA02CBC
+  AccessExpired: 80000
+
+Database:
+  Postgres:
+    Dsn: host=127.0.0.1 port=5432 user=root password=123456 dbname=asense_sm TimeZone=Asia/Shanghai
+    IsMigration: true

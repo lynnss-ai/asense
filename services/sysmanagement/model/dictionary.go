@@ -24,7 +24,7 @@ type (
 		FindOneByDicCode(ctx context.Context, dicCode string) (*Dictionary, error)
 		List(ctx context.Context, pid *string, isEnable *bool, isEdit *bool, isHide *bool, filter *string) ([]*Dictionary, error)
 		CountByPid(ctx context.Context, id *string) (int64, error)
-		ExistByDicCode(ctx context.Context, dicCode string) (bool, error)
+		ExistByDicCode(ctx context.Context, id *string, dicCode string) (bool, error)
 		Enable(ctx context.Context, id string) error
 	}
 
@@ -77,7 +77,7 @@ func (m *defaultDictionaryModel) Update(ctx context.Context, id string, v map[st
 }
 
 func (m *defaultDictionaryModel) Delete(ctx context.Context, id string) error {
-	return m.db.Delete(&Dictionary{}, id).Error
+	return m.db.Where("is_hide = FALSE").Delete(&Dictionary{}, id).Error
 }
 
 func (m *defaultDictionaryModel) FindOne(ctx context.Context, id string) (*Dictionary, error) {
@@ -134,9 +134,14 @@ func (m *defaultDictionaryModel) CountByPid(ctx context.Context, id *string) (in
 	return count, err
 }
 
-func (m *defaultDictionaryModel) ExistByDicCode(ctx context.Context, dicCode string) (bool, error) {
+func (m *defaultDictionaryModel) ExistByDicCode(ctx context.Context, id *string, dicCode string) (bool, error) {
 	var count int64
-	err := m.db.Model(&Dictionary{}).Where("dic_code = ?", dicCode).Count(&count).Error
+	query := m.db.Model(&Dictionary{}).Where("dic_code = ?", dicCode)
+	if id != nil {
+		query = query.Where("id != ?", *id)
+	}
+
+	err := query.Count(&count).Error
 
 	return count > 0, err
 }
@@ -148,5 +153,5 @@ func (m *defaultDictionaryModel) Enable(ctx context.Context, id string) error {
 		return err
 	}
 
-	return m.db.Model(&Dictionary{}).Where("id = ?", id).Update("is_enable", !result.IsEnable).Error
+	return m.db.Model(&Dictionary{}).Where("id = ? AND is_hide = FALSE", id).Update("is_enable", !result.IsEnable).Error
 }

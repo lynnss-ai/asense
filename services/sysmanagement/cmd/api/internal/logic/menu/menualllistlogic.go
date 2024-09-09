@@ -1,7 +1,10 @@
 package menu
 
 import (
+	"asense/common/errorx"
+	"asense/services/sysmanagement/model"
 	"context"
+	"github.com/jinzhu/copier"
 
 	"asense/services/sysmanagement/cmd/api/internal/svc"
 	"asense/services/sysmanagement/cmd/api/internal/types"
@@ -25,7 +28,21 @@ func NewMenuAllListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *MenuA
 }
 
 func (l *MenuAllListLogic) MenuAllList() (resp *types.MenuListResp, err error) {
-	// todo: add your logic here and delete this line
+	var (
+		menus    []*model.Menu
+		treeList []*model.TreeMenu
+		menuTree []*types.MenuTreeResp
+	)
+	menus, err = l.svcCtx.MenuModel.ListAll(l.ctx, nil, nil)
+	if err != nil {
+		return nil, errorx.NewDataBaseError(err)
+	}
 
-	return
+	treeList, err = l.svcCtx.MenuModel.ListTree(l.ctx, menus)
+	if err != nil {
+		return nil, errorx.NewDataBaseError(err)
+	}
+
+	_ = copier.Copy(&menuTree, &treeList)
+	return &types.MenuListResp{Items: menuTree}, nil
 }

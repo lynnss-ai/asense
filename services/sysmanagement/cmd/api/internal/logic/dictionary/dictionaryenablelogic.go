@@ -1,6 +1,8 @@
 package dictionary
 
 import (
+	"asense/common/errorx"
+	"asense/services/sysmanagement/model"
 	"context"
 
 	"asense/services/sysmanagement/cmd/api/internal/svc"
@@ -25,7 +27,23 @@ func NewDictionaryEnableLogic(ctx context.Context, svcCtx *svc.ServiceContext) *
 }
 
 func (l *DictionaryEnableLogic) DictionaryEnable(req *types.ComIDPathReq) error {
-	// todo: add your logic here and delete this line
-
+	var (
+		dic *model.Dictionary
+		err error
+	)
+	dic, err = l.svcCtx.DictionaryModel.FindOne(l.ctx, req.ID)
+	if err != nil {
+		return errorx.NewDataBaseError(err)
+	}
+	if !dic.IsEdit {
+		return errorx.NewDefaultError("该项数据不可进行启用或禁用操作")
+	}
+	if dic.IsHide {
+		return errorx.NewDefaultError("该项数据不可进行启用或禁用操作")
+	}
+	err = l.svcCtx.DictionaryModel.Enable(l.ctx, req.ID)
+	if err != nil {
+		return errorx.NewDataBaseError(err)
+	}
 	return nil
 }

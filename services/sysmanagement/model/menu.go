@@ -24,9 +24,9 @@ type (
 		Insert(ctx context.Context, arg *Menu) error
 		BatchInsert(ctx context.Context, args []*Menu) error
 		Update(ctx context.Context, id string, v map[string]interface{}) error
-		Delete(ctx context.Context, id int) error
+		Delete(ctx context.Context, id string) error
 		FindOne(ctx context.Context, id string) (*Menu, error)
-		ListByIds(ctx context.Context, ids []string) ([]*Menu, error)
+		ListByIds(ctx context.Context, ids []*string) ([]*Menu, error)
 		ListAll(ctx context.Context, filter *string, isEnable *bool) ([]*Menu, error)
 		ListTree(ctx context.Context, items []*Menu) ([]*TreeMenu, error)
 		ExistByMenuCode(ctx context.Context, menuCode string) (bool, error)
@@ -38,7 +38,7 @@ type (
 	MenuTypeEnum int
 
 	Menu struct {
-		ID                   int            `json:"id" gorm:"column:id;primaryKey;type:varchar(32)"`                                    // 菜单ID
+		ID                   string         `json:"id" gorm:"column:id;primaryKey;type:varchar(32)"`                                    // 菜单ID
 		PID                  string         `json:"pid" gorm:"column:pid;type:varchar(32);not null"`                                    // 父ID[根节点模型为字符串0]
 		MenuName             string         `json:"menu_name" gorm:"column:menu_name;type:varchar(32);not null"`                        // 菜单名称
 		MenuCode             string         `json:"menu_code" gorm:"column:menu_code;type:varchar(32);not null"`                        // 菜单编码
@@ -93,7 +93,7 @@ func (m *defaultMenuModel) Update(ctx context.Context, id string, v map[string]i
 	return m.db.Model(&Menu{}).Where("id = ?", id).Updates(v).Error
 }
 
-func (m *defaultMenuModel) Delete(ctx context.Context, id int) error {
+func (m *defaultMenuModel) Delete(ctx context.Context, id string) error {
 	return m.db.Delete(&Menu{}, id).Error
 }
 
@@ -104,7 +104,7 @@ func (m *defaultMenuModel) FindOne(ctx context.Context, id string) (*Menu, error
 	return result, err
 }
 
-func (m *defaultMenuModel) ListByIds(ctx context.Context, ids []string) ([]*Menu, error) {
+func (m *defaultMenuModel) ListByIds(ctx context.Context, ids []*string) ([]*Menu, error) {
 	var items []*Menu
 	err := m.db.Where("id in (?)", ids).Find(&items).Error
 

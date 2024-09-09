@@ -1,6 +1,7 @@
 package menu
 
 import (
+	"asense/common/errorx"
 	"context"
 
 	"asense/services/sysmanagement/cmd/api/internal/svc"
@@ -25,7 +26,27 @@ func NewMenuDelLogic(ctx context.Context, svcCtx *svc.ServiceContext) *MenuDelLo
 }
 
 func (l *MenuDelLogic) MenuDel(req *types.ComIDPathReq) error {
-	// todo: add your logic here and delete this line
-
+	var (
+		count int64
+		err   error
+	)
+	count, err = l.svcCtx.MenuModel.CountByPid(l.ctx, req.ID)
+	if err != nil {
+		return errorx.NewDataBaseError(err)
+	}
+	if count > 0 {
+		return errorx.NewDefaultError("该菜单下存在子菜单，不能删除")
+	}
+	count, err = l.svcCtx.RolePermissionModel.CountByMenuID(l.ctx, req.ID)
+	if err != nil {
+		return errorx.NewDataBaseError(err)
+	}
+	if count > 0 {
+		return errorx.NewDefaultError("该菜单下存在角色，不能删除")
+	}
+	err = l.svcCtx.MenuModel.Delete(l.ctx, req.ID)
+	if err != nil {
+		return errorx.NewDataBaseError(err)
+	}
 	return nil
 }

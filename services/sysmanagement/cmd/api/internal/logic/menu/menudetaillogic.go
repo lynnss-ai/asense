@@ -1,6 +1,8 @@
 package menu
 
 import (
+	"asense/common/errorx"
+	"asense/services/sysmanagement/model"
 	"context"
 
 	"asense/services/sysmanagement/cmd/api/internal/svc"
@@ -25,7 +27,27 @@ func NewMenuDetailLogic(ctx context.Context, svcCtx *svc.ServiceContext) *MenuDe
 }
 
 func (l *MenuDetailLogic) MenuDetail(req *types.ComIDPathReq) (resp *types.MenuResp, err error) {
-	// todo: add your logic here and delete this line
+	var menu *model.Menu
 
-	return
+	menu, err = l.svcCtx.MenuModel.FindOne(l.ctx, req.ID)
+	if err != nil {
+		return nil, errorx.NewDataBaseError(err)
+	}
+	resp = &types.MenuResp{
+		ID:                   menu.ID,
+		PID:                  menu.PID,
+		MenuName:             menu.MenuName,
+		MenuCode:             menu.MenuCode,
+		MenuDesc:             menu.MenuDesc,
+		MenuIcon:             menu.MenuIcon,
+		MenuPath:             menu.MenuPath,
+		MenuType:             int(menu.MenuType),
+		MenuComponent:        menu.MenuComponent,
+		IsHideInMenu:         menu.IsHideInMenu,
+		IsHideChildrenInMenu: menu.IsHideChildrenInMenu,
+		IsHideInBreadcrumb:   menu.IsHideInBreadcrumb,
+		IsEnable:             menu.IsEnable,
+		Sort:                 menu.Sort,
+	}
+	return resp, nil
 }
