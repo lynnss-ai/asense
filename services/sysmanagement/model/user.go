@@ -3,7 +3,7 @@
 // @Author  : Wang Xuebing
 // @Contact : lynnss.ai@hotmail.com
 // @Time    : 2024/9/7 15:07
-// @Desc    :
+// @Desc    : 用户
 package model
 
 import (
