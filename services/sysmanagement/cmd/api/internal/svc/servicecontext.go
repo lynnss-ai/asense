@@ -11,14 +11,18 @@ import (
 )
 
 type ServiceContext struct {
-	Config              config.Config
-	Tx                  dbcore.Transaction
-	DictionaryModel     model.DictionaryModel
-	MenuModel           model.MenuModel
-	RoleModel           model.RoleModel
-	RolePermissionModel model.RolePermissionModel
-	UserModel           model.UserModel
-	UserRoleModel       model.UserRoleModel
+	Config                config.Config
+	Tx                    dbcore.Transaction
+	AttachmentModel       model.AttachmentModel
+	DictionaryModel       model.DictionaryModel
+	MenuModel             model.MenuModel
+	OrganizationModel     model.OrganizationModel
+	OrganizationUserModel model.OrganizationUserModel
+	PositionModel         model.PositionModel
+	RoleModel             model.RoleModel
+	RolePermissionModel   model.RolePermissionModel
+	UserModel             model.UserModel
+	UserRoleModel         model.UserRoleModel
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -43,13 +47,17 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	isMigration := c.Database.Postgres.IsMigration
 
 	return &ServiceContext{
-		Config:              c,
-		Tx:                  dbcore.NewTransaction(db),
-		DictionaryModel:     model.NewDictionaryModel(isMigration, db),
-		MenuModel:           model.NewMenuModel(isMigration, db),
-		RoleModel:           model.NewRoleModel(isMigration, db),
-		RolePermissionModel: model.NewRolePermissionModel(isMigration, db),
-		UserModel:           model.NewUserModel(isMigration, db),
-		UserRoleModel:       model.NewUserRoleModel(isMigration, db),
+		Config:                c,
+		Tx:                    dbcore.NewTransaction(db),
+		AttachmentModel:       model.NewAttachmentModel(isMigration, db),
+		DictionaryModel:       model.NewDictionaryModel(isMigration, db),
+		MenuModel:             model.NewMenuModel(isMigration, db),
+		OrganizationModel:     model.NewOrganizationModel(isMigration, db),
+		OrganizationUserModel: model.NewOrganizationUserModel(isMigration, db),
+		PositionModel:         model.NewPositionModel(isMigration, db),
+		RoleModel:             model.NewRoleModel(isMigration, db),
+		RolePermissionModel:   model.NewRolePermissionModel(isMigration, db),
+		UserModel:             model.NewUserModel(isMigration, db),
+		UserRoleModel:         model.NewUserRoleModel(isMigration, db),
 	}
 }
